@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "enron-email-pipeline"
+version = "1.0.0"
+authors = [
+  { name="Jake" },
+]
+description = "A robust, multi-stage pipeline for parsing, cleaning, and analyzing the Enron email dataset."
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+
+dependencies = [
+    "pandas>=1.5.0",
+    "pyarrow>=10.0.0",
+    "matplotlib>=3.5.0",
+    "seaborn>=0.12.0",
+    "python-dateutil>=2.8.2",
+    "numpy>=1.21.0",
+    "tqdm>=4.60.0",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/HotProtato/enronemailparser"
+"Bug Tracker" = "https://github.com/HotProtato/enronemailparser/issues"
