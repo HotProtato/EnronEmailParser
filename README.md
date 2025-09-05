@@ -6,7 +6,7 @@ allow for efficient parsing.
 2. Separating parent and child emails, parsing both.
 3. Logical matching of users by names, emails, any other alias format, and postprocessing matching.
 
-*Instructions*
+**Instructions**
 The default locations if you prefer not to change them, is to have the "maildir" folder in the "input" folder that's
 a sibling to the "src" folder.
 
