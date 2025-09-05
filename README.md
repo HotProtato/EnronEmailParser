@@ -21,7 +21,8 @@ default.
 
 Enjoy!
 
-*Limitations & Contributing*
+**Limitations & Contributing**
+
 1. To my knowledge, there are approximately 61 users with the alias of only one character; this forms a tiny percentage.
 2. There are a little over 4,000 email items (approx 2.1% of the data) that have a -1 value for the "sender_id" field.
 I may decide to address this in the future, otherwise all are welcome to contribute by way of a pull request.
