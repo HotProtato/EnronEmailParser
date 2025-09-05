@@ -4,6 +4,7 @@ My approach differs by:
 1. Converting each file into a canon format (there is a potential difference for timezones) to de-duplicate and
 allow for efficient parsing.
 2. Separating parent and child emails, parsing both.
+3. Logical matching of users by names, emails, any other alias format, and postprocessing matching.
 
 *Instructions*
 The default locations if you prefer not to change them, is to have the "maildir" folder in the "input" folder that's
