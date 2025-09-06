@@ -37,22 +37,24 @@ class EmailPipeline:
         child_emails: set[str] = set() if email_split_size <= 1 else email_split[1:-1]
 
         parent_processed_email, parent_timezone = self._process_parent_email(parent_email, message_cache, lock)
-        if parent_processed_email:
+        parent_hash = processed_emails
+        if isinstance(parent_processed_email, ProcessedEmail):
             processed_emails.add(parent_processed_email)
+            parent_hash = parent_processed_email.email_hash
         for child_email in child_emails:
-            processed_child_email = self._process_child_email(child_email, parent_timezone, message_cache, lock)
+            processed_child_email = self._process_child_email(child_email, parent_timezone, message_cache, lock, parent_hash)
             if processed_child_email:
                 processed_emails.add(processed_child_email)
         return processed_emails
 
 
-    def _process_parent_email(self, email: str, message_cache, lock) -> tuple[ProcessedEmail, timezone] | tuple[None, timezone]:
+    def _process_parent_email(self, email: str, message_cache, lock) -> tuple[ProcessedEmail, timezone] | tuple[str, timezone]:
         """
         The orchestra for managing the parent email only.
         :param email: Parent email, absent of any "---- Original Message ----" objects and text thereafter.
         :param message_cache: The instance of the message cache.
         :param lock: Pool manager lock.
-        :return: ProcessedEmail object and the timezone extracted from the date data.
+        :return: ProcessedEmail object and the timezone extracted from the date data. If cached, the hash is returned instead.
         """
         msg_re = re.search(self.parent_msg_filter, email, flags=re.DOTALL)
         global_utils.is_regex_populated(msg_re, "Parent email filter", email)
@@ -62,7 +64,7 @@ class EmailPipeline:
         msg_hash = msg_hash.hexdigest()
         with lock:
             if msg_hash in message_cache:
-                return None, message_cache[msg_hash]
+                return msg_hash, message_cache[msg_hash]
         # Date prefix is different for parent and child emails.
         date_re = re.search(r"Date:\s*(.*)\n", email)
         global_utils.is_regex_populated(date_re, "Parent date field", email)
@@ -84,14 +86,15 @@ class EmailPipeline:
             norm_date=norm_date_obj,
             subject=subject_text,
             aliases=frozenset({alias for alias in aliases if alias}),
-            sender=senders
+            sender=senders,
+            parent_hash=""
         )
         with lock:
             message_cache[msg_hash] = date_obj.tzinfo
         return processed_email, date_obj.tzinfo
 
 
-    def _process_child_email(self, email: str, parent_timezone: timezone, message_cache, lock) -> ProcessedEmail | None:
+    def _process_child_email(self, email: str, parent_timezone: timezone, message_cache, lock, parent_hash: str) -> ProcessedEmail | None:
         """
         The orchestra for child emails only.
         :param email: Text representing a child email.
