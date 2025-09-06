@@ -8,8 +8,6 @@ from typing import Set, List, Dict
 import traceback
 
 import pandas as pd
-import pyarrow as pa
-import pyarrow.parquet as pq
 
 from email_pipeline.pipeline import EmailPipeline
 from src.buffer.buffer_manager import EmailBufferManager
@@ -121,7 +119,8 @@ def run():
                         "subject": processed_email.subject,
                         "date": processed_email.date,
                         "norm_date": processed_email.norm_date,
-                        "sender_id": sender_id
+                        "sender_id": sender_id,
+                        "parent_hash": processed_email.parent_hash
                     }
                     email_buffer_manager.add_emails([email_data])
 
@@ -149,26 +148,6 @@ def decode_str(encoding: bytes) -> str | None:
     except Exception as e:
         raise ValueError(f"Failed to decode quoted-printable string: {e}")
 
-def _write_batch_to_parquet(data_buffer: List[Dict], file_path: Path):
-    """
-    Writes a batch of processed email data to a Parquet file.
-    Appends to the file if it already exists, otherwise creates it.
-    """
-    if not data_buffer:
-        return
-
-    # Convert the list of dictionaries to a pandas DataFrame
-    df = pd.DataFrame(data_buffer)
-
-    # Check if the file already exists
-    if os.path.exists(file_path):
-        # If it exists, append the data
-        table = pa.Table.from_pandas(df, preserve_index=False)
-        with pq.ParquetWriter(file_path, table.schema, compression='snappy') as writer:
-            writer.write_table(table)
-    else:
-        # If it doesn't exist, create a new file
-        df.to_parquet(file_path, engine='pyarrow', index=False)
 
 def _write_groups_to_parquet(groups: Dict[frozenset, int], file_path: Path):
     """
