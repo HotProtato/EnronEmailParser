@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import FrozenSet
+from typing import FrozenSet, Optional
 
 
 @dataclass(frozen=True)
@@ -11,3 +11,4 @@ class ProcessedEmail:
     subject: str
     aliases: FrozenSet[str]
     sender: FrozenSet[str]
+    parent_hash: Optional[str] = None
