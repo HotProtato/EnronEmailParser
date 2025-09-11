@@ -3,8 +3,9 @@ This project is a parsing attempt at the Enron email dataset, found here: https:
 My approach differs by:
 1. Converting each file into a canon format (there is a potential difference for timezones) to de-duplicate and
 allow for efficient parsing.
-2. Separating parent and child emails, parsing both.
-3. Logical matching of users by names, emails, any other alias format, and postprocessing matching.
+2. Another cache specifically for hashed email messages.
+3. Separating parent and child emails, parsing both.
+4. Logical matching of users by names, emails, any other alias format, and postprocessing matching.
 
 ## Instructions
 
